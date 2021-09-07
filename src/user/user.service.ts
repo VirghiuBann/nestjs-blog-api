@@ -7,12 +7,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { FindUserDto } from './dto/find-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
   constructor(
-    private readonly configService: ConfigService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
@@ -35,7 +33,7 @@ export class UserService {
     const userUpdate = await this.userRepository.findOne(id);
     userUpdate.name = updateUserDto.name;
     userUpdate.username = updateUserDto.username;
-    userUpdate.password = updateUserDto.password;
+    // userUpdate.password = updateUserDto.password;
     return this.userRepository.save(userUpdate);
   }
 
