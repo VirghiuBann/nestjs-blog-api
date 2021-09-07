@@ -1,18 +1,25 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { FindUserDto } from './dto/find-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class UserService {
   constructor(
+    private readonly configService: ConfigService,
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
-  create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const SALT = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(createUserDto.password, SALT);
+    createUserDto.password = hashPassword;
     return this.userRepository.save(createUserDto);
   }
 
