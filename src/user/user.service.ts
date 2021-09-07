@@ -14,11 +14,32 @@ export class UserService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
+  async create(createUserDto: CreateUserDto): Promise<User | any> {
     const SALT = await bcrypt.genSalt();
     const hashPassword = await bcrypt.hash(createUserDto.password, SALT);
     createUserDto.password = hashPassword;
-    return this.userRepository.save(createUserDto);
+
+    try {
+      const userExist = await this.userRepository.findOne({
+        where: [{ email: createUserDto.email }],
+      });
+
+      if (userExist) {
+        throw new HttpException(
+          'User with the same username or email already exists',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const createUser = await this.userRepository.save(createUserDto);
+      createUser.password = undefined;
+      return createUser;
+    } catch (error) {
+      throw new HttpException(
+        'User with that username or email already exist',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 
   findAll(): Promise<FindUserDto[]> {
@@ -32,7 +53,6 @@ export class UserService {
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const userUpdate = await this.userRepository.findOne(id);
     userUpdate.name = updateUserDto.name;
-    userUpdate.username = updateUserDto.username;
     // userUpdate.password = updateUserDto.password;
     return this.userRepository.save(userUpdate);
   }
