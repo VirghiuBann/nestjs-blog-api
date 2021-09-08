@@ -1,4 +1,11 @@
-import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Blog } from 'src/blog/entities/blog.entity';
+import {
+  BeforeInsert,
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -13,6 +20,9 @@ export class User {
 
   @Column()
   password: string;
+
+  @OneToMany((type) => Blog, (blog) => blog.author)
+  blogs: Blog[];
 
   @BeforeInsert()
   emailToLowerCase() {
