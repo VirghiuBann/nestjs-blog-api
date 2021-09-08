@@ -26,7 +26,7 @@ export class UserService {
 
       if (userExist) {
         throw new HttpException(
-          'User with the same username or email already exists',
+          'User with the same email already exists',
           HttpStatus.BAD_REQUEST,
         );
       }
@@ -36,7 +36,7 @@ export class UserService {
       return createUser;
     } catch (error) {
       throw new HttpException(
-        'User with that username or email already exist',
+        'User with that email already exist',
         HttpStatus.BAD_REQUEST,
       );
     }
@@ -67,7 +67,7 @@ export class UserService {
       return user;
     }
     throw new HttpException(
-      'The user with this email does not exist',
+      'Invalid credentials, try again',
       HttpStatus.NOT_FOUND,
     );
   }
