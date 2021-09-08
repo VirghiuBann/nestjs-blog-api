@@ -53,7 +53,6 @@ export class UserService {
   async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     const userUpdate = await this.userRepository.findOne(id);
     userUpdate.name = updateUserDto.name;
-    // userUpdate.password = updateUserDto.password;
     return this.userRepository.save(userUpdate);
   }
 
